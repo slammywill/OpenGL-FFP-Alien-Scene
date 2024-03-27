@@ -7,7 +7,7 @@ using namespace std;
 
 // Globals
 float angle = 0, look_x = 00., look_z = -1., eye_x, eye_z;  //Camera parameters
-GLuint txId[2];   //Texture ids
+GLuint txId[3];   //Texture ids
 GLUquadricObj* q;
 float white[4] = { 1.0, 1.0, 1.0, 1.0 };
 float green[4] = { 0.0, 1.0, 0.0, 1.0 };
@@ -17,7 +17,7 @@ bool animationActive = false;
 bool goingUp = true;
 
 void loadTextures() {
-	glGenTextures(2, txId);
+	glGenTextures(3, txId);
 	glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture name for the following OpenGL texture
 	loadBMP("dirt.bmp");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtering
@@ -27,6 +27,12 @@ void loadTextures() {
 	loadBMP("metal2.bmp");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtering
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, txId[2]);  //Use this texture name for the following OpenGL texture
+	loadBMP("sky.bmp");
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	// Linear Filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 }
 
 void timer(int value) {
@@ -138,6 +144,7 @@ void display(void) {
 
 	displayFloor(&txId[0]);
 	ufo(shadowMat, &txId[1], q, height);
+	skydome(50, &txId[2], q);
 
 	glutSwapBuffers();       //Double buffered animation
 }

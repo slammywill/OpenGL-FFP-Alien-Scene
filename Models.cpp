@@ -115,7 +115,24 @@ void ufo(float shadowMat[], GLuint* texturePtr, GLUquadricObj* q, float height) 
 
 }
 
-void takeoff(void) {
+void skydome(float radius, GLuint* texturePtr, GLUquadricObj* q) {
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
+	glBindTexture(GL_TEXTURE_2D, *texturePtr);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
+	glScalef(1., 1., 1.0);
+
+	glMatrixMode(GL_MODELVIEW);
+
+	glPushMatrix();
+	glRotatef(-90., 1.0, 0., 0.0);
+	gluSphere(q, radius, 50., 50.);
+	glPopMatrix();
+	glEnable(GL_CULL_FACE);
+		
 
 }
 

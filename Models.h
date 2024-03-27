@@ -2,4 +2,4 @@
 
 void displayFloor(GLuint* texturePtr);
 void ufo(float shadowMat[], GLuint* texturePtr, GLUquadricObj* q, float height);
-void takeoff(void);
+void skydome(float radius, GLuint* texturePtr, GLUquadricObj* q);
