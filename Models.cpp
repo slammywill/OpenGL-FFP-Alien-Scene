@@ -1,7 +1,10 @@
 #include <GL/freeglut.h>
 #include <cmath>
 
-float rotRoundBody = 0;
+float rotRoundBody = 0.;
+float legAngle = -15.;
+float angleAroundWalk = 0;
+bool forward = true;
 
 
 void displayFloor(GLuint* texturePtr) {
@@ -66,52 +69,52 @@ void ufo(float shadowMat[], GLuint* texturePtr, GLUquadricObj* q, float height) 
 	glMultMatrixf(shadowMat);
 	glTranslatef(c[0], c[1], c[2]);
 	glScalef(5, 1, 5);
-	glutSolidSphere(1., 50., 50.);
-	glPopMatrix();
-	glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
+glutSolidSphere(1., 50., 50.);
+glPopMatrix();
+glEnable(GL_LIGHTING);
+glEnable(GL_DEPTH_TEST);
 
-	// -------------- Cockpit ------------------ //
+// -------------- Cockpit ------------------ //
 
-	glColor3f(.2, .8, .8);
-	glPushMatrix();
-	glTranslatef(c[0], c[1] + .6, c[2]);
-	glScalef(2, 1, 2);
-	gluSphere(q, 1., 50., 50.);
-	glPopMatrix();
+glColor3f(.2, .8, .8);
+glPushMatrix();
+glTranslatef(c[0], c[1] + .6, c[2]);
+glScalef(2, 1, 2);
+gluSphere(q, 1., 50., 50.);
+glPopMatrix();
 
 
-	// ---------------- Spinning Things ---------------- //
+// ---------------- Spinning Things ---------------- //
 
-	for (int i = 0; i <= 1; i++) {
-		glColor4f(0.8, 0.8, 0.8, 1);
-		glPushMatrix();
-		glTranslatef(c[0], c[1], c[2]);
-		glRotatef(rotRoundBody + i * 180, 0, 1, 0);
-		glTranslatef(0, 0, mainRad - 0.15);
-		glutSolidCylinder(0.1, 0.2, 20, 20);
-		glPopMatrix();
-
-		i == 0 ? glColor4f(0, 1, 0, 1.) : glColor4f(1, 0, 0, 1);
-		glPushMatrix();
-		glTranslatef(c[0], c[1], c[2]);
-		glRotatef(rotRoundBody + i * 180, 0, 1, 0);
-		glTranslatef(0, 0, mainRad - 0.1);
-		glutSolidCylinder(0.08, 0.2, 20, 20);
-		glLightfv(GL_LIGHT2, GL_POSITION, spotPos);
-		glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotDir);
-		glPopMatrix();
-	}
-
+for (int i = 0; i <= 1; i++) {
+	glColor4f(0.8, 0.8, 0.8, 1);
 	glPushMatrix();
 	glTranslatef(c[0], c[1], c[2]);
-	glRotatef(rotRoundBody, 0, 1, 0);
-	glTranslatef(0, 0, mainRad + 0.5);
-	glLightfv(GL_LIGHT1, GL_POSITION, spotPos);
-	glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotDir);
+	glRotatef(rotRoundBody + i * 180, 0, 1, 0);
+	glTranslatef(0, 0, mainRad - 0.15);
+	glutSolidCylinder(0.1, 0.2, 20, 20);
 	glPopMatrix();
 
-	/*glEnable(GL_TEXTURE_2D);*/
+	i == 0 ? glColor4f(0, 1, 0, 1.) : glColor4f(1, 0, 0, 1);
+	glPushMatrix();
+	glTranslatef(c[0], c[1], c[2]);
+	glRotatef(rotRoundBody + i * 180, 0, 1, 0);
+	glTranslatef(0, 0, mainRad - 0.1);
+	glutSolidCylinder(0.08, 0.2, 20, 20);
+	glLightfv(GL_LIGHT2, GL_POSITION, spotPos);
+	glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spotDir);
+	glPopMatrix();
+}
+
+glPushMatrix();
+glTranslatef(c[0], c[1], c[2]);
+glRotatef(rotRoundBody, 0, 1, 0);
+glTranslatef(0, 0, mainRad + 0.5);
+glLightfv(GL_LIGHT1, GL_POSITION, spotPos);
+glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spotDir);
+glPopMatrix();
+
+/*glEnable(GL_TEXTURE_2D);*/
 
 }
 
@@ -132,7 +135,98 @@ void skydome(float radius, GLuint* texturePtr, GLUquadricObj* q) {
 	gluSphere(q, radius, 50., 50.);
 	glPopMatrix();
 	glEnable(GL_CULL_FACE);
-		
-
 }
 
+void alien(float shadowMat[]) {
+	angleAroundWalk+= 0.3;
+	angleAroundWalk >= 360 ? 0 : angleAroundWalk;
+
+
+	float pos[3] = { 0., 2., -10. };
+	// --------------- Head --------------- //
+	glDisable(GL_TEXTURE_2D);
+	glColor3f(0.33, 0.8, 0.2);
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1], pos[2]);
+	glTranslatef(0, 0, -10);
+	glRotatef(angleAroundWalk, 0, 1, 0);
+	glTranslatef(0, 0, 10);
+	glScalef(0.5, 0.5, 1.);
+	glutSolidSphere(1., 20, 20);
+	glPopMatrix();
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+
+	glColor3f(0.1, 0.07, .0);
+	glPushMatrix();
+	glMultMatrixf(shadowMat);
+	glTranslatef(pos[0], pos[1], pos[2]);
+	glTranslatef(0, 0, -10);
+	glRotatef(angleAroundWalk, 0, 1, 0);
+	glTranslatef(0, 0, 10);
+	glScalef(0.5, 0.5, 1);
+	glutSolidSphere(1., 20, 20);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+
+
+
+	// -------------- Legs -------------- //
+	if (forward) {
+		legAngle += 1.;
+	}
+	else (legAngle -= 1.);
+
+	if (legAngle > 15 || legAngle < -15) {
+		forward = !forward;
+	}
+
+	glColor3f(0.33, 0.8, 0.2);
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1]-.2, pos[2]+0.5);
+	glTranslatef(0., 0., -10.5);
+	glRotatef(angleAroundWalk, 0., 1., 0.);
+	glTranslatef(0., 0., 10.5);
+	glRotatef(90, 1., 0., 0.);
+	glRotatef(90, 0., 0., 1.);
+	glRotatef(legAngle, 1., 0., 0.);
+	glutSolidCylinder(0.1, 1.8, 20, 20);
+	glPopMatrix();
+
+
+	glColor3f(0.33, 0.8, 0.2);
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1]-.2, pos[2]-0.5);
+	glTranslatef(0., 0., -9.5);
+	glRotatef(angleAroundWalk, 0., 1., 0.);
+	glTranslatef(0., 0., 9.5);
+	glRotatef(90, 1., 0., 0.);
+	glRotatef(90, 0., 0., 1.);
+	glRotatef(-legAngle, 1., 0., 0.);
+	glutSolidCylinder(0.1, 1.8, 20, 20);
+	glPopMatrix();
+
+	// ----------------- Eyes ------------- //
+
+	glColor3f(0., 0., 0.);
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1] + 0.2, pos[2]+0.5);
+	glTranslatef(0., 0., -10.5);
+	glRotatef(angleAroundWalk+2, 0., 1., 0.);
+	glTranslatef(0., 0., 10.5);
+	glutSolidSphere(0.1, 10, 10);
+	glPopMatrix();
+
+	glColor3f(0., 0., 0.);
+	glPushMatrix();
+	glTranslatef(pos[0], pos[1] + 0.2, pos[2]-0.5);
+	glTranslatef(0., 0., -9.5);
+	glRotatef(angleAroundWalk+2, 0., 1., 0.);
+	glTranslatef(0., 0., 9.5);
+	glutSolidSphere(0.1, 10, 10);
+	glPopMatrix();
+
+
+}

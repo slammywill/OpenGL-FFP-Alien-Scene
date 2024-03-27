@@ -59,7 +59,6 @@ void timer(int value) {
 void initialize(void) {
 
 	loadTextures();
-	printf("fsdfljks");
 
 	glClearColor(0, 1, 1, 1);
 	glClearDepth(1.0f);
@@ -145,6 +144,7 @@ void display(void) {
 	displayFloor(&txId[0]);
 	ufo(shadowMat, &txId[1], q, height);
 	skydome(50, &txId[2], q);
+	alien(shadowMat);
 
 	glutSwapBuffers();       //Double buffered animation
 }
