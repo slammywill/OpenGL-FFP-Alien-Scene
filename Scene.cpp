@@ -77,9 +77,14 @@ void initialize(void) {
 	glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 30.0);
 	glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 0);
 
-	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, white);
-	glMaterialf(GL_FRONT, GL_SHININESS, 50);
+	GLfloat mat_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat mat_diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat mat_shininess[] = { 100.0f };
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);  //Default
 	glEnable(GL_COLOR_MATERIAL);
@@ -145,7 +150,8 @@ void display(void) {
 	ufo(shadowMat, &txId[1], q, height);
 	skydome(50, &txId[2], q);
 	alien(shadowMat);
-    hill(3., 0.5, 50., q);
+    hill(1.1, 0.5, 50., q);
+	egg();
 
 	glutSwapBuffers();       //Double buffered animation
 }

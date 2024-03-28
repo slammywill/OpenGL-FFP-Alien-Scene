@@ -240,17 +240,7 @@ double toRad(double angle) {
 
 
 void hill(double initHRadius, double vRadius, int numSlices, GLUquadricObj* q) {
-	glEnable(GL_LIGHTING);
-	GLfloat mat_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	GLfloat mat_diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-	GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	GLfloat mat_shininess[] = { 10.0f };
-	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-	float texScale = 1.;
-	
+
 	double hAngle = 0.;
 	double vAngle = 0.;
 	double hRadius = initHRadius - vRadius;
@@ -265,10 +255,10 @@ void hill(double initHRadius, double vRadius, int numSlices, GLUquadricObj* q) {
 
 	
 	glDisable(GL_TEXTURE_2D);
-	glColor3f(0.5, 0.5, 0.5);
+	glColor3f(0.75, 0.61, 0.24);
 	
 	glPushMatrix();
-	glTranslatef(20., 0., -20.);
+	glTranslatef(15., 0., -20.);
 	glBegin(GL_QUADS);
 
 	for (int j = 0; j < numSlices; j++) {
@@ -313,4 +303,13 @@ void hill(double initHRadius, double vRadius, int numSlices, GLUquadricObj* q) {
 
 	glEnd();
     glPopMatrix();
+}
+
+void egg() {
+	glColor3f(1., 1., 0.8);
+	glPushMatrix();
+	glTranslatef(15, 0.2, -20);
+	glScalef(1, 1.5, 1);
+	glutSolidSphere(0.5, 20, 20);
+	glPopMatrix();
 }
