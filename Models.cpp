@@ -1,10 +1,13 @@
 #include <GL/freeglut.h>
 #include <cmath>
+#include <vector>
+using namespace std;
 
 float rotRoundBody = 0.;
 float legAngle = -15.;
 float angleAroundWalk = 0;
-bool forward = true;
+bool fwd = true;
+const int numPoints = 50;
 
 
 void displayFloor(GLuint* texturePtr) {
@@ -13,24 +16,26 @@ void displayFloor(GLuint* texturePtr) {
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1, 1, 1);
 	glBindTexture(GL_TEXTURE_2D, *texturePtr);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-	float texScale = 0.1;
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	double texScale = 0.1;
+	glNormal3f(0., 1., 0);
+
 	glPushMatrix();
 		glBegin(GL_QUADS);
 			for(int i = -200; i < 200; i++)
-	{
-		for(int j = -200;  j < 200; j++)
-		{
-			glTexCoord2f(i * texScale, j * texScale);
-			glVertex3f(i , 0, j);
-			glTexCoord2f(i * texScale, (j+1) * texScale);
-			glVertex3f(i, 0, j+1);
-			glTexCoord2f((i+1) * texScale, (j+1) * texScale);
-			glVertex3f(i+1, 0, j+1);
-			glTexCoord2f((i+1) * texScale, j * texScale);
-			glVertex3f(i+1, 0, j);
-		}
-	}
+			{
+				for(int j = -200;  j < 200; j++)
+				{
+					glTexCoord2f(i * texScale, j * texScale);
+					glVertex3f(i , 0., j);
+					glTexCoord2f(i * texScale, (j+1) * texScale);
+					glVertex3f(i, 0., j+1);
+					glTexCoord2f((i+1) * texScale, (j+1) * texScale);
+					glVertex3f(i+1., 0., j+1);
+					glTexCoord2f((i+1) * texScale, j * texScale);
+					glVertex3f(i+1., 0., j);
+				}
+			}
 		glEnd();
 	glPopMatrix();
 	glMaterialfv(GL_FRONT, GL_SPECULAR, white);
@@ -174,13 +179,13 @@ void alien(float shadowMat[]) {
 
 
 	// -------------- Legs -------------- //
-	if (forward) {
+	if (fwd) {
 		legAngle += 1.;
 	}
 	else (legAngle -= 1.);
 
 	if (legAngle > 15 || legAngle < -15) {
-		forward = !forward;
+		fwd = !fwd;
 	}
 
 	glColor3f(0.33, 0.8, 0.2);
@@ -229,38 +234,83 @@ void alien(float shadowMat[]) {
 	glPopMatrix();
 }
 
-void hill(float hRadius, float vRadius, int numSlices, int numPoints, GLUquadricObj* q) {
-    float angle = 0.;
+double toRad(double angle) {
+	return angle * 3.141592 / 180.;
+}
 
-    // ------------ Make v[] ------------------------- //
-    float vx[numPoints];
-    float vy[numPoints];
-    float vz[numPoints];
-    float wx[numPoints];
-    float wy[numPoints];
-    float wz[numPoints];
-    wx[0], wy[0], wz[0] = 0.;
 
-    // ------------ Make sweep surface --------------- //
-    glColor3f(0.8, 0.3, 0.3);
-    glPushMatrix();
-    for (int slice = 0; slice < numSlices; slice++) {
-        for (int i = 0; i < numPoints; i++) {
-            wx[i] = vx[i] * cos(angle) + vz[i] * sin(angle);
-            wy[i] = vy[i];
-            wz[i] = vz[i] * cos(angle) - vx[i] * sin(angle);
-        }
-        glBegin(GL_QUAD_STRIP);
-            for (int i; i < numPoints; i++) {
-                glVertex3f(vx[i], vy[i], vz[i]);
-                glVertex3f(wx[i], wy[i], wz[i]);
-            }
-        glEnd();
-        for (int i = 0; i < numPoints; i++) {
-            vx[i] = wx[i];
-            vy[i] = wy[i];
-            vz[i] = wy[i];
-        }
-    }
+void hill(double initHRadius, double vRadius, int numSlices, GLUquadricObj* q) {
+	glEnable(GL_LIGHTING);
+	GLfloat mat_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat mat_diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat mat_shininess[] = { 10.0f };
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	float texScale = 1.;
+	
+	double hAngle = 0.;
+	double vAngle = 0.;
+	double hRadius = initHRadius - vRadius;
+	
+	double vx[numPoints] = { 0. };
+	double vy[numPoints] = { 0. };
+	double vz[numPoints] = { 0. };
+
+	double wx[numPoints] = { 0. };
+	double wy[numPoints] = { 0. };
+	double wz[numPoints] = { 0. };
+
+	
+	glDisable(GL_TEXTURE_2D);
+	glColor3f(0.5, 0.5, 0.5);
+	
+	glPushMatrix();
+	glTranslatef(20., 0., -20.);
+	glBegin(GL_QUADS);
+
+	for (int j = 0; j < numSlices; j++) {
+		double nextVAngle = vAngle + 180. / numSlices;
+		double nextHRadius = initHRadius - vRadius * cosf(toRad(nextVAngle));
+		for (int i = 0; i < numPoints; i++) {
+
+			vx[i] = hRadius * sinf(toRad(hAngle));
+			vy[i] = vRadius * sinf(toRad(vAngle));
+			vz[i] = hRadius * cosf(toRad(hAngle));
+
+			wx[i] = nextHRadius * sinf(toRad(hAngle));
+			wy[i] = vRadius * sinf(toRad(nextVAngle));
+			wz[i] = nextHRadius * cosf(toRad(hAngle));
+
+			hAngle += 360. / numPoints;
+		}
+
+		for (int i = 0; i < numPoints; i++) {
+			glNormal3f(-vx[i] * -cosf(toRad(hAngle)), sin(toRad(vAngle)), -vz[i] * -cosf(toRad(hAngle)));
+			glVertex3f(vx[i], vy[i], vz[i]);
+
+			glNormal3f(-wx[i] * -cosf(toRad(hAngle)), sin(toRad(nextVAngle)), -wz[i] * -cosf(toRad(hAngle)));
+			glVertex3f(wx[i], wy[i], wz[i]);
+
+			glNormal3f(-wx[(i + 1) % (numPoints)] * -cosf(toRad(hAngle)), sin(toRad(nextVAngle)), -wz[(i + 1) % (numPoints)] * -cosf(toRad(hAngle)));
+			glVertex3f(wx[(i + 1) % (numPoints)], wy[(i + 1) % (numPoints)], wz[(i + 1) % (numPoints)]);
+			
+			glNormal3f(-vx[(i + 1) % (numPoints)] * -cosf(toRad(hAngle)), sin(toRad(vAngle)), -vz[(i + 1) % (numPoints)] * -cosf(toRad(hAngle)));
+			glVertex3f(vx[(i + 1) % (numPoints)], vy[(i + 1) % (numPoints)], vz[(i + 1) % (numPoints)]);
+		}
+
+		for (int i = 0; i < numPoints; i++) {
+			vx[i] = wx[i];
+			vy[i] = wy[i];
+			vz[i] = wz[i];
+		}
+
+		vAngle = nextVAngle;
+		hRadius = nextHRadius;
+	}
+
+	glEnd();
     glPopMatrix();
 }
