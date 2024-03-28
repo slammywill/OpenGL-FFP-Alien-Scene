@@ -227,6 +227,40 @@ void alien(float shadowMat[]) {
 	glTranslatef(0., 0., 9.5);
 	glutSolidSphere(0.1, 10, 10);
 	glPopMatrix();
+}
 
+void hill(float hRadius, float vRadius, int numSlices, int numPoints, GLUquadricObj* q) {
+    float angle = 0.;
 
+    // ------------ Make v[] ------------------------- //
+    float vx[numPoints];
+    float vy[numPoints];
+    float vz[numPoints];
+    float wx[numPoints];
+    float wy[numPoints];
+    float wz[numPoints];
+    wx[0], wy[0], wz[0] = 0.;
+
+    // ------------ Make sweep surface --------------- //
+    glColor3f(0.8, 0.3, 0.3);
+    glPushMatrix();
+    for (int slice = 0; slice < numSlices; slice++) {
+        for (int i = 0; i < numPoints; i++) {
+            wx[i] = vx[i] * cos(angle) + vz[i] * sin(angle);
+            wy[i] = vy[i];
+            wz[i] = vz[i] * cos(angle) - vx[i] * sin(angle);
+        }
+        glBegin(GL_QUAD_STRIP);
+            for (int i; i < numPoints; i++) {
+                glVertex3f(vx[i], vy[i], vz[i]);
+                glVertex3f(wx[i], wy[i], wz[i]);
+            }
+        glEnd();
+        for (int i = 0; i < numPoints; i++) {
+            vx[i] = wx[i];
+            vy[i] = wy[i];
+            vz[i] = wy[i];
+        }
+    }
+    glPopMatrix();
 }

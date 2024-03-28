@@ -1,0 +1,3 @@
+/csse/users/swi126/Documents/COSC363/COSC363_Assignment_1_swi126/CMakeFiles/Scene.out.dir
+/csse/users/swi126/Documents/COSC363/COSC363_Assignment_1_swi126/CMakeFiles/edit_cache.dir
+/csse/users/swi126/Documents/COSC363/COSC363_Assignment_1_swi126/CMakeFiles/rebuild_cache.dir

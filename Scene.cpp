@@ -145,6 +145,7 @@ void display(void) {
 	ufo(shadowMat, &txId[1], q, height);
 	skydome(50, &txId[2], q);
 	alien(shadowMat);
+    hill(40., 5., 30, 30, q);
 
 	glutSwapBuffers();       //Double buffered animation
 }

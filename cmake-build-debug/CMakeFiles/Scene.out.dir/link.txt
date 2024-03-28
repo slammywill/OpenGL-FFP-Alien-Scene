@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -rdynamic CMakeFiles/Scene.out.dir/Scene.cpp.o CMakeFiles/Scene.out.dir/Models.cpp.o -o Scene.out  -lGL -lGLU /OpenGl/lib/GL/ 
